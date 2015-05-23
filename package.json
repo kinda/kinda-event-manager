@@ -4,7 +4,7 @@
   "description": "...",
   "author": "Manuel Vila <mvila@3base.com>",
   "license": "MIT",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/kinda/kinda-event-manager"
