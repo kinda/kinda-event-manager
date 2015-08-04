@@ -1,8 +1,8 @@
 'use strict';
 
-let KindaClass = require('kinda-class');
+let KindaObject = require('kinda-object');
 
-let EventManager = KindaClass.extend('EventManager', function() {
+let EventManager = KindaObject.extend('EventManager', function() {
   // === Synchronous listeners ===
 
   this.getListeners = function(name, createIfUndefined) {
