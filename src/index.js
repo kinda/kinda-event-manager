@@ -3,8 +3,6 @@
 let KindaObject = require('kinda-object');
 
 let EventManager = KindaObject.extend('EventManager', function() {
-  // === Synchronous listeners ===
-
   this.getListeners = function(name, createIfUndefined) {
     if (!this.hasOwnProperty('_listeners')) {
       if (!createIfUndefined) return undefined;
@@ -47,49 +45,6 @@ let EventManager = KindaObject.extend('EventManager', function() {
       results.push(listeners[i].apply(thisArg, args));
     }
     return results;
-  };
-
-  // === Asynchronous (generators) listeners ===
-
-  this.getAsyncListeners = function(name, createIfUndefined) {
-    if (!this.hasOwnProperty('_asyncListeners')) {
-      if (!createIfUndefined) return undefined;
-      this._asyncListeners = {};
-    }
-    if (!this._asyncListeners.hasOwnProperty(name)) {
-      if (!createIfUndefined) return undefined;
-      this._asyncListeners[name] = [];
-    }
-    return this._asyncListeners[name];
-  };
-
-  this.onAsync = function(name, fn) {
-    let asyncListeners = this.getAsyncListeners(name, true);
-    asyncListeners.push(fn);
-    return fn;
-  };
-
-  this.offAsync = function(name, fn) {
-    let asyncListeners = this.getAsyncListeners(name);
-    if (!asyncListeners) return;
-    let index = asyncListeners.indexOf(fn);
-    if (index !== -1) asyncListeners.splice(index, 1);
-  };
-
-  this.emitAsync = function *(name, ...args) {
-    yield this._callAsyncListeners(name, this, args);
-    let prototype = Object.getPrototypeOf(this);
-    if (prototype._callAsyncListeners) {
-      yield prototype._callAsyncListeners(name, this, args);
-    }
-  };
-
-  this._callAsyncListeners = function *(name, thisArg, args) {
-    let asyncListeners = this.getAsyncListeners(name);
-    if (!asyncListeners) return;
-    for (let i = 0; i < asyncListeners.length; i++) {
-      yield asyncListeners[i].apply(thisArg, args);
-    }
   };
 });
 
