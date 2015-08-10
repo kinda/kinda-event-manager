@@ -31,19 +31,22 @@ let EventManager = KindaObject.extend('EventManager', function() {
   };
 
   this.emit = function(name, ...args) {
-    this._callListeners(name, this, args);
+    let results = this._callListeners(name, this, args);
     let prototype = Object.getPrototypeOf(this);
     if (prototype._callListeners) {
-      prototype._callListeners(name, this, args);
+      results.push.apply(results, prototype._callListeners(name, this, args));
     }
+    return Promise.all(results);
   };
 
   this._callListeners = function(name, thisArg, args) {
     let listeners = this.getListeners(name);
-    if (!listeners) return;
+    if (!listeners) return [];
+    let results = [];
     for (let i = 0; i < listeners.length; i++) {
-      listeners[i].apply(thisArg, args);
+      results.push(listeners[i].apply(thisArg, args));
     }
+    return results;
   };
 
   // === Asynchronous (generators) listeners ===

@@ -1,8 +1,7 @@
 'use strict';
 
-require('co-mocha');
 let assert = require('chai').assert;
-let wait = require('co-wait');
+let util = require('kinda-util').create();
 let KindaEventManager = require('./src');
 
 suite('KindaEventManager', function() {
@@ -54,55 +53,55 @@ suite('KindaEventManager', function() {
     assert.isFalse(hasBeenCalled);
   });
 
-  test('async listener', function *() {
+  test('async listener', async function() {
     let person = KindaEventManager.instantiate();
     let hasBeenCalled = false;
-    person.onAsync('event', function *(arg) {
+    person.on('event', async function(arg) {
       assert.strictEqual(this, person);
       assert.strictEqual(arg, 123);
-      yield wait(50);
+      await util.timeout(50);
       hasBeenCalled = true;
     });
-    yield person.emitAsync('event', 123);
+    await person.emit('event', 123);
     assert.isTrue(hasBeenCalled);
   });
 
-  test('async listeners on both instance and prototype', function *() {
+  test('async listeners on both instance and prototype', async function() {
     let person;
     let prototypeHasBeenCalled = false;
     let instanceHasBeenCalled = false;
     let Person = KindaEventManager.extend('Person', function() {
-      this.onAsync('event', function *(arg) {
+      this.on('event', async function(arg) {
         assert.strictEqual(this, person);
         assert.strictEqual(arg, 123);
-        yield wait(25);
+        await util.timeout(25);
         prototypeHasBeenCalled = true;
       });
     });
     person = Person.instantiate();
-    person.onAsync('event', function *(arg) {
+    person.on('event', async function(arg) {
       assert.strictEqual(this, person);
       assert.strictEqual(arg, 123);
-      yield wait(25);
+      await util.timeout(25);
       instanceHasBeenCalled = true;
     });
-    yield person.emitAsync('event', 123);
+    await person.emit('event', 123);
     assert.isTrue(prototypeHasBeenCalled);
     assert.isTrue(instanceHasBeenCalled);
   });
 
-  test('remove async listener', function *() {
+  test('remove async listener', async function() {
     let person = KindaEventManager.instantiate();
     let hasBeenCalled = false;
-    let listener = person.onAsync('event', function *() {
-      yield wait(50);
+    let listener = person.on('event', async function() {
+      await util.timeout(50);
       hasBeenCalled = true;
     });
-    yield person.emitAsync('event');
+    await person.emit('event');
     assert.isTrue(hasBeenCalled);
     hasBeenCalled = false;
-    person.offAsync('event', listener);
-    yield person.emitAsync('event');
+    person.off('event', listener);
+    await person.emit('event');
     assert.isFalse(hasBeenCalled);
   });
 });
