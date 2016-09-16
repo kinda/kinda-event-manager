@@ -24,10 +24,10 @@
   },
   "devDependencies": {
     "babel": "^5.8.38",
-    "babel-eslint": "^4.0.5",
+    "babel-eslint": "^4.1.8",
     "chai": "^2.3.0",
-    "eslint": "^1.0.0",
-    "eslint-config-kinda": "^0.2.0",
+    "eslint": "^1.10.3",
+    "eslint-config-kinda": "^0.2.10",
     "kinda-util": "^0.2.6",
     "mocha": "^2.2.5"
   }
