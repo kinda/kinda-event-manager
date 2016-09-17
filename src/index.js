@@ -40,9 +40,11 @@ let EventManager = KindaObject.extend('EventManager', function() {
   this._callListeners = function(name, thisArg, args) {
     let listeners = this.getListeners(name);
     if (!listeners) return [];
-    // We have to copy the array in case a listener is removed
-    // during the execution of the others:
-    listeners = listeners.slice();
+    if (listeners.length > 1) {
+      // We have to copy the array in case a listener is removed
+      // during the execution of the others:
+      listeners = listeners.slice();
+    }
     let results = [];
     for (let i = 0; i < listeners.length; i++) {
       results.push(listeners[i].apply(thisArg, args));
