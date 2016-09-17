@@ -53,6 +53,20 @@ suite('KindaEventManager', function() {
     assert.isFalse(hasBeenCalled);
   });
 
+  test('remove listener inside another listener', function() {
+    let person = KindaEventManager.instantiate();
+    let callCount = 0;
+    let listener = person.on('event', function() {
+      callCount++;
+      person.off('event', listener);
+    });
+    person.on('event', function() {
+      callCount++;
+    });
+    person.emit('event');
+    assert.equal(callCount, 2);
+  });
+
   test('async listener', async function() {
     let person = KindaEventManager.instantiate();
     let hasBeenCalled = false;
