@@ -17,7 +17,8 @@ let EventManager = KindaObject.extend('EventManager', function() {
 
   this.on = function(name, fn) {
     let listeners = this.getListeners(name, true);
-    listeners.push(fn);
+    let index = listeners.indexOf(undefined);
+    if (index !== -1) listeners[index] = fn; else listeners.push(fn);
     return fn;
   };
 
@@ -25,7 +26,7 @@ let EventManager = KindaObject.extend('EventManager', function() {
     let listeners = this.getListeners(name);
     if (!listeners) return;
     let index = listeners.indexOf(fn);
-    if (index !== -1) listeners.splice(index, 1);
+    if (index !== -1) listeners[index] = undefined;
   };
 
   this.emit = function(name, ...args) {
@@ -40,14 +41,10 @@ let EventManager = KindaObject.extend('EventManager', function() {
   this._callListeners = function(name, thisArg, args) {
     let listeners = this.getListeners(name);
     if (!listeners) return [];
-    if (listeners.length > 1) {
-      // We have to copy the array in case a listener is removed
-      // during the execution of the others:
-      listeners = listeners.slice();
-    }
     let results = [];
     for (let i = 0; i < listeners.length; i++) {
-      results.push(listeners[i].apply(thisArg, args));
+      let fn = listeners[i];
+      if (fn) results.push(fn.apply(thisArg, args));
     }
     return results;
   };
